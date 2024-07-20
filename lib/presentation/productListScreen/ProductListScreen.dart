@@ -20,52 +20,48 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   ProductListScreenViewModel viewModel =
   getIt<ProductListScreenViewModel>();
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     viewModel.initPage();
   }
+
   @override
   Widget build(BuildContext context) {
     return
       BlocConsumer<ProductListScreenViewModel,
           ProductListScreenState>(
         bloc: viewModel,
-        // buildWhen: (previous, current) {
-        //   if(current is Error)return false;
-        //   if(current is Loading)return false;
-        //   return true;
-        // },
-        // listenWhen: (previous, current) {
-        //   if(current is Error)return true;
-        //   if(current is Loading)return true;
-        //   return false;
-        // },
+        buildWhen: (previous, current) {
+          if (current is Error) return false;
+          if (current is Loading) return false;
+          return true;
+        },
+        listenWhen: (previous, current) {
+          if (current is Error) return true;
+          if (current is Loading) return true;
+          return false;
+        },
         builder: (context, state) {
-          if(state is Success){
-           // return buildSuccessWidget(state.product??[]);
-            Scaffold(
-              appBar: AppBar(title: const Text("Success")),
-              body: const Center(child: CircularProgressIndicator()),
-            );
+          if (state is Success) {
+            return buildSuccessWidget(state.product ?? []);
           }
           return Scaffold(
             appBar: AppBar(title: const Text("Not Success")),
             body: const Center(child: CircularProgressIndicator()),
           );
         },
-        listener: (context, state) {
-
+        listener: (BuildContext context, ProductListScreenState state) {
+          if (state is Loading) {}
+          if (state is Error) {}
         },
-        // listener: (BuildContext context, ProductListScreenState state) {
-        //   if(state is Loading){}
-        //   if(state is Error){}
-        // },
       );
   }
-  Widget buildSuccessWidget(List<Product> products){
-    return   Scaffold(
+
+  Widget buildSuccessWidget(List<Product> products) {
+    return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -81,19 +77,19 @@ class _ProductListScreenState extends State<ProductListScreen> {
             const SearchAndCartComponent(),
             Expanded(
               child: GridView.builder(
-                gridDelegate:
-                const SliverGridDelegateWithFixedCrossAxisCount
-                  (
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 8.0,
-                    mainAxisSpacing: 10.0,
-                    childAspectRatio: 0.8
-                ),
+                  gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount
+                    (
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 8.0,
+                      mainAxisSpacing: 10.0,
+                      childAspectRatio: 0.8
+                  ),
 
-                itemCount:products.length ,
-                itemBuilder: (context, index) {
-                  return ProductComponent(products[index]);
-                }
+                  itemCount: products.length,
+                  itemBuilder: (context, index) {
+                    return ProductComponent(products[index]);
+                  }
               ),
             ),
           ],
@@ -101,62 +97,4 @@ class _ProductListScreenState extends State<ProductListScreen> {
       ),
     );
   }
-
-
-
 }
-      // body: Padding(
-      //   padding: EdgeInsets.symmetric(horizontal: 12),
-      //   child: Column(
-      //         crossAxisAlignment: CrossAxisAlignment.start,
-      //         children: [
-      //           SizedBox(
-      //             height: 60.,
-      //           ),
-      //
-      //           // Logo App
-      //           Image.asset(
-      //             AppAssets.appLogoSvg,
-      //             width: 70.,
-      //           ),
-      //
-      //           SizedBox(
-      //             height: 10.h,
-      //           ),
-      //
-      //           // Search Product And Add Product To Cart
-      //           SearchAndCartComponent(
-      //             cubit: cubit,
-      //           ),
-      //
-      //
-      //
-      //           // Products View
-      //           Expanded(
-      //             child: GridView.builder(
-      //               gridDelegate:
-      //               const SliverGridDelegateWithFixedCrossAxisCount(
-      //                   crossAxisCount: 2,
-      //                   crossAxisSpacing: 8.0,
-      //                   mainAxisSpacing: 10.0,
-      //                   childAspectRatio: 0.8),
-      //               itemCount: cubit.search!.length,
-      //               itemBuilder: (context, index) {
-      //                 return ProductComponent(
-      //                   image:
-      //                   cubit.search![index].images.first.toString(),
-      //                   name: cubit.search![index].title,
-      //                   description: cubit.search![index].description,
-      //                   price: cubit.search![index].discountPercentage
-      //                       .toString(),
-      //                   desPrice: cubit.search![index].price.toString(),
-      //                   rate: cubit.search![index].rating.toString(),
-      //                 );
-      //               },
-      //             ),
-      //           ),
-      //         ],
-      //       );
-      //     },
-      //   ),
-      // ),
